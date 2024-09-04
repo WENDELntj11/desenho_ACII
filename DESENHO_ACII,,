@@ -1,0 +1,303 @@
+using System;
+
+// Classe que representa o desenho de um cachorro
+public class Dog
+{
+    public void Print()
+    {
+        Console.WriteLine(@"
+ / \__
+(    @\___
+ /         O
+/   (_____/
+/_____/  U
+");
+    }
+}
+
+// Classe que representa o desenho de um gato
+public class Cat
+{
+    public void Print()
+    {
+        Console.WriteLine(@"
+ /\_/\  
+( o.o ) 
+ > ^ <
+");
+    }
+}
+
+// Classe que representa o desenho de um peixe
+public class Fish
+{
+    public void Print()
+    {
+        Console.WriteLine(@"
+ ><(((('>
+");
+    }
+}
+
+// Classe principal que gerencia a exibição dos desenhos e o menu de opções
+class Program
+{
+    static void Main()
+    {
+        Dog dog = new Dog();
+        Cat cat = new Cat();
+        Fish fish = new Fish();
+
+        bool exit = false;
+
+        while (!exit)
+        {
+            Console.Clear();
+            Console.WriteLine("Escolha um animal para visualizar:");
+            Console.WriteLine("1. Cachorro");
+            Console.WriteLine("2. Gato");
+            Console.WriteLine("3. Peixe");
+            Console.WriteLine("4. Sair");
+            Console.Write("Digite sua escolha (1-4): ");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    dog.Print();
+                    break;
+                case "2":
+                    cat.Print();
+                    break;
+                case "3":
+                    fish.Print();
+                    break;
+                case "4":
+                    exit = true;
+                    Console.WriteLine("Saindo...");
+                    break;
+                default:
+                    Console.WriteLine("Escolha inválida, por favor tente novamente.");
+                    break;
+            }
+
+            if (!exit)
+            {
+                Console.WriteLine("\nPressione qualquer tecla para continuar...");
+                Console.ReadKey();
+            }
+        }
+    }
+}
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+public interface IDrawing
+{
+
+
+    string GetDrawing();
+
+}
+
+
+
+public class Dog : IDrawing
+
+{
+
+    public string GetDrawing()
+
+    {
+
+        return @"
+ / \__
+
+(    @\___
+
+/         O
+/   (_____/
+/_____/  U";
+    }
+}
+
+public class Cat : IDrawing
+
+
+{
+    public string GetDrawing()
+    {
+        return @"
+ /\_/\  
+( o.o ) 
+ > ^ <";
+    }
+}
+
+public class Fish : IDrawing
+{
+
+    public string GetDrawing()
+    {
+
+        return @"
+ ><(((('>";
+    }
+}
+
+public class Bird : IDrawing
+{
+    public string GetDrawing()
+    {
+        return @"
+  \\
+   (o>
+
+\\_//)
+ \_/_)
+  _|_";
+    }
+}
+
+public class UserDrawing : IDrawing
+{
+    private readonly string _drawing;
+
+    public UserDrawing(string drawing)
+    {
+        _drawing = drawing;
+    }
+
+
+    public string GetDrawing()
+    {
+        return _drawing;
+    }
+}
+
+class Program
+{
+    static List<IDrawing> drawings = new List<IDrawing>
+    {
+        new Dog(),
+        new Cat(),
+        new Fish(),
+        new Bird()
+    };
+
+    static void Main()
+    {
+        while (true)
+        {
+            Console.Clear();
+            ShowMenu();
+            var choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    ShowDrawings();
+                    break;
+                case "2":
+                    AddDrawing();
+                    break;
+                case "3":
+                    RemoveDrawing();
+                    break;
+                case "4":
+                    SaveDrawingsToFile();
+                    break;
+                case "5":
+                    return; // Sair do programa
+                default:
+                    Console.WriteLine("Opção inválida. Tente novamente.");
+                    break;
+            }
+        }
+    }
+
+    static void ShowMenu()
+    {
+        Console.WriteLine("Menu:");
+        Console.WriteLine("1. Mostrar desenhos");
+        Console.WriteLine("2. Adicionar novo desenho");
+        Console.WriteLine("3. Remover desenho");
+        Console.WriteLine("4. Salvar desenhos em arquivo");
+        Console.WriteLine("5. Sair");
+        Console.Write("Escolha uma opção: ");
+    }
+
+    static void ShowDrawings()
+    {
+        Console.Clear();
+        Console.WriteLine("Desenhos disponíveis:");
+        for (int i = 0; i < drawings.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {drawings[i].GetDrawing()}");
+        }
+        Console.WriteLine("Pressione Enter para voltar ao menu.");
+        Console.ReadLine();
+    }
+
+    static void AddDrawing()
+    {
+        Console.Clear();
+        Console.WriteLine("Digite seu desenho ASCII:");
+        var userDrawing = Console.ReadLine();
+        if (!string.IsNullOrWhiteSpace(userDrawing))
+        {
+            drawings.Add(new UserDrawing(userDrawing));
+            Console.WriteLine("Desenho adicionado com sucesso!");
+        }
+        else
+        {
+            Console.WriteLine("Desenho inválido.");
+        }
+        Console.WriteLine("Pressione Enter para voltar ao menu.");
+        Console.ReadLine();
+    }
+
+    static void RemoveDrawing()
+    {
+        Console.Clear();
+        ShowDrawings();
+        Console.WriteLine("Digite o número do desenho que deseja remover:");
+        if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= drawings.Count)
+        {
+            drawings.RemoveAt(index - 1);
+            Console.WriteLine("Desenho removido com sucesso!");
+        }
+        else
+        {
+            Console.WriteLine("Número inválido.");
+        }
+        Console.WriteLine("Pressione Enter para voltar ao menu.");
+        Console.ReadLine();
+    }
+
+    static void SaveDrawingsToFile()
+    {
+        Console.Clear();
+        Console.WriteLine("Salvando desenhos em 'drawings.txt'...");
+        using (var writer = new StreamWriter("drawings.txt"))
+        {
+            foreach (var drawing in drawings)
+            {
+                writer.WriteLine(drawing.GetDrawing());
+                writer.WriteLine(); // Linha em branco entre desenhos
+            }
+        }
+        Console.WriteLine("Desenhos salvos com sucesso!");
+        Console.WriteLine("Pressione Enter para voltar ao menu.");
+        Console.ReadLine();
+    }
+}
+
